@@ -1,0 +1,3 @@
+build/*.o
+build/lexer
+build/lexer.exe

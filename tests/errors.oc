@@ -1,0 +1,9 @@
+i32 _hidden = 1;
+f32 x = 1.;
+i32 y = 3..4;
+string s = "unterminated
+i32 z = a @ b;
+bool w = a != b;
+f32 q = 1.5.2;
+vector<f32> v = [1.0, .5];
+matrix<f32> M = A .+ B;
