@@ -68,3 +68,4 @@ struct Token
 const char *tokenTypeName(TokenType type);
 TokenType lookupKeyword(const std::string &lexeme);
 TokenType lookupOperator(const std::string &lexeme);
+bool hasValuePart(TokenType type);

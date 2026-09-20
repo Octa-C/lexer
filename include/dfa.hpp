@@ -5,20 +5,23 @@
 enum CharClass
 {
     CC_LETTER,     // a-z A-Z
+    CC_EXP,         //e E
     CC_DIGIT,      // 0-9
     CC_UNDERSCORE, //_
     CC_WS,         // space, \t ,\r ,\f ,\v
     CC_NEWLINE,    //\n
     CC_QUOTE,      // "
     CC_DOT,        // .
+    CC_PLUS,       // +
     CC_MINUS,      // -
+    CC_STAR,       // *
+    CC_SLASH,      // /
     CC_LT,         // <
     CC_GT,         // >
     CC_EQ,         // =
-    CC_STAR_SLASH, // * /
-    CC_SIMPLE,     // { } ( ) [ ] ; , : + ' % single char that cannot be extended to a longer operator
+    CC_SIMPLE,     // { } ( ) [ ] ; , : ' % single char that cannot be extended to a longer operator
     CC_OTHER,      // any other character not in the above classes
-    NUM_CLASSES    // sentinel=14, sizes the table's columns
+    NUM_CLASSES    // sentinel=17, sizes the table's columns
 };
 
 enum State
@@ -29,17 +32,22 @@ enum State
     S_INT,      // 3 [0-9]+ accepting
     S_INT_DOT,  // 4 [0-9]+\. not accepting
     S_FLOAT,    // 5 [0-9]+\.[0-9]+ accepting
-    S_OP_DONE,  // 6 any operator /punctuator that cannot be extended
+    S_EXP,      // 6 [E] not accepting
+    S_EXP_SIGN, // 7 [E][+-] not accepting
+    S_FLOAT_EXP, // 8 [E][+-]?[0-9]+ accepting
+    S_OP_DONE,  // 9 any operator /punctuator that cannot be extended
     // {} () ... -> <= >= .* ./ = * /
     // accepting resolved by lookup operator ()
-    S_MINUS,    // 7 - accepting, can extend  to ->
-    S_REL,      // 8 < or > accepting, but may extend to  <= or >=
-    S_DOT,      // 9 . not accepting, waits for * / or .
-    S_DOT_DOT,  // 10 .. not accepting, waits for . to form ...
-    S_STR_BODY, // 11 " followed by anything but " or \n, not accepting,
-    S_STR_END,  // 12 closing " seen, accepting"
-    S_WS,       // 13 run of whitespaces  accepting but produces no token
-    NUM_STATES  // sentinel=14 , sizes the table's rows
+    S_MINUS,    // 7 - accepting, can extend  to -> or -=
+    S_OP_EQ,     // 8 accepting  < > + * may extend to with = (<= >= += *=)
+    S_SLASH,     // 9 accepting  / may extend to /= or start a comment //
+    S_COMMENT,   // 10 accepting (skip) up to eof
+    S_DOT,      // 11. not accepting, waits for * / or .
+    S_DOT_DOT,  // 12 .. not accepting, waits for . to form ...
+    S_STR_BODY, // 13 " followed by anything but " or \n, not accepting,
+    S_STR_END,  // 14 closing " seen, accepting"
+    S_WS,       // 15 run of whitespaces  accepting but produces no token
+    NUM_STATES  // sentinel=16 , sizes the table's rows
 };
 
 enum Action

@@ -120,7 +120,12 @@ static const std::unordered_map<std::string, TokenType> OPERATORS = {
     {"<=", OPERATORS_RELATIONAL_AND_COMPARISON_OPS_LESS_EQ},
     {">=", OPERATORS_RELATIONAL_AND_COMPARISON_OPS_GREATER_EQ},
 
-    {"=", OPERATORS_ASSIGNMENT},
+    {"=",   OPERATORS_ASSIGNMENT},
+    {"+=",  OPERATORS_ASSIGNMENT},
+    {"-=",  OPERATORS_ASSIGNMENT},
+    {"*=",  OPERATORS_ASSIGNMENT},
+    {"/=",  OPERATORS_ASSIGNMENT},
+
 };
 
 const char *tokenTypeName(TokenType type)
@@ -138,4 +143,21 @@ TokenType lookupOperator(const std::string &lexeme)
 {
     auto it = OPERATORS.find(lexeme);
     return it == OPERATORS.end() ? COMPILER_ERROR : it->second;
+}
+
+bool hasValuePart(TokenType type)
+{
+    switch (type) {
+        case IDENTIFIER:
+        case CONSTANTS_INT_LITERAL:
+        case CONSTANTS_FLOAT_LITERAL:
+        case CONSTANTS_STRING_LITERAL:
+        case DT_SCALAR:
+        case OPERATORS_ASSIGNMENT:
+        case OPERATORS_STANDARD_PLUSMINUS:
+        case OPERATORS_STANDARD_STAR_SLASH_MOD:
+            return true;
+        default:
+            return false;
+    }
 }

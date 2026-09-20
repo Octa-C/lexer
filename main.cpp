@@ -52,7 +52,9 @@ int main(int argc, char** argv) {
     Scanner scanner(buf.str());
     for (;;) {
         Token t = scanner.next();
-        std::cout << '<' << tokenTypeName(t.type) << ", " << t.value << ">\n";
+        std::cout << '<' << tokenTypeName(t.type) << ',';
+        if (hasValuePart(t.type)) std::cout << ' ' << t.value;
+        std::cout << ">\n";
         if (t.type == COMPILER_ERROR)
             std::cerr << argv[1] << ':' << t.line << ':' << t.column
                       << ": error: unrecognized lexeme '" << t.value << "'\n";
