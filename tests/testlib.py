@@ -2,9 +2,9 @@
 Helpers for the pytest suite in test_lexer.py.
 
 Layout:
-    tests/cases/<name>.oc          lexer input
-    tests/expected/<name>.toks     expected token stream, one <TYPE, value> per line
-    tests/expected/<name>.stderr   expected diagnostics (optional, empty when absent)
+    tests/cases/<name>.oc                         lexer input
+    tests/expected/<name>.toks                    expected token stream, one <TYPE, value> per line
+    tests/expected/diagnostics/<name>.stderr      expected diagnostics (optional, empty when absent)
 
 Note: This file was written by Claude (Anthropic)
 """
@@ -78,7 +78,7 @@ def expected_tokens_path(name):
 
 
 def expected_stderr_path(name):
-    return EXPECTED_DIR / f"{name}.stderr"
+    return EXPECTED_DIR / "diagnostics" / f"{name}.stderr"
 
 
 def read_lines(path):
