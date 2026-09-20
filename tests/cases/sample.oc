@@ -9,9 +9,12 @@ function dot(vector<f32> a, vector<f32> b) -> f32 {
 function classify(i32 n) -> string {
     string label = "";
     caseof (n % 3) {
-        case 0: label = "fizz";
-        case 1: label = "one";
-        default: label = "other";
+        case 0: 
+            label = "fizz";
+        case 1: 
+            label = "one";
+        default: 
+            label = "other";
     }
     return label;
 }
