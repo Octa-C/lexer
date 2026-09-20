@@ -97,13 +97,16 @@ const Action ACTION[NUM_STATES] = {
     A_SKIP,   // S_WS         accepting, but no token
 };
 
-const char *STATE_NAMES[NUM_STATES] = {
+const char *STATE_NAMES[] = {
     "DEAD",
     "START",
     "IDENT",
     "INT",
     "INT_DOT",
     "FLOAT",
+    "EXP",
+    "EXP_SIGN",
+    "FLOAT_EXP",
     "OP_DONE",
     "MINUS",
     "OP_EQ",
@@ -116,8 +119,12 @@ const char *STATE_NAMES[NUM_STATES] = {
     "WS",
 };
 
-const char *CLASS_NAMES[NUM_CLASSES] = {
+static_assert(sizeof(STATE_NAMES) / sizeof(STATE_NAMES[0]) == NUM_STATES,
+              "STATE_NAMES is out of sync with enum State");
+
+const char *CLASS_NAMES[] = {
     "LETTER",
+    "EXP",
     "DIGIT",
     "_",
     "WS",
@@ -134,3 +141,6 @@ const char *CLASS_NAMES[NUM_CLASSES] = {
     "SIMPLE",
     "OTHER",
 };
+
+static_assert(sizeof(CLASS_NAMES) / sizeof(CLASS_NAMES[0]) == NUM_CLASSES,
+              "CLASS_NAMES is out of sync with enum CharClass");

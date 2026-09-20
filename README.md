@@ -18,9 +18,13 @@ To use another compiler or flags: `make CXX=clang++ CXXFLAGS="-O0 -g"`.
 ## Usage
 
 ```sh
-build/lexer <file.oc>       # print the token stream
-build/lexer --dump-table    # print the DFA transition table (markdown)
+build/lexer <file.oc>              # print the token stream
+build/lexer <file.oc> -o <out>     # write the token stream to <out>
+build/lexer --dump-table           # print the DFA transition table (markdown)
 ```
+
+`-o <out>` can also come before the file. Diagnostics go to stderr in either
+case.
 
 ### Output
 
@@ -55,7 +59,7 @@ file. Line and column numbers are 1-based.
 
 Exit codes: `0` when the file was scanned (even if it contained lexical
 errors, so check stderr or look for `COMPILER_ERROR` tokens), `2` for a usage
-error or an unreadable file.
+error, an unreadable input file or an output file that cannot be written.
 
 ## Testing
 
@@ -103,7 +107,7 @@ listed.
 | Other types | `vector` `matrix` `string` |
 | Identifier | `[a-zA-Z][a-zA-Z0-9_]*` (cannot start with `_`) |
 | Integer literal | `[0-9]+` |
-| Float literal | `[0-9]+\.[0-9]+` (`1.` and `.5` are errors) |
+| Float literal | `[0-9]+\.[0-9]+` or `[0-9]+(\.[0-9]+)?[eE][+-]?[0-9]+` (`1.` and `.5` are errors) |
 | String literal | `"[^"\n]*"` (no escapes, single line) |
 | Arithmetic | `+` `-` `*` `/` `%` |
 | Matrix | `'` (transpose), `.*`, `./` |
@@ -120,10 +124,10 @@ interpret them.
 
 The scanner is a DFA driven by a transition table.
 
-1. **Character classes.** Each input byte maps to one of 14 classes
+1. **Character classes.** Each input byte maps to one of 17 classes
    (`CC_LETTER`, `CC_DIGIT`, `CC_DOT`, ...) via `charClassOf`.
 2. **Transition table.** `TRANSITION[state][class]` in `src/dfa.cpp` gives the
-   next state, with 14 states in total. `ACTION[state]` says what an accepting
+   next state, with 19 states in total. `ACTION[state]` says what an accepting
    state produces.
 3. **Maximal munch with backtracking.** `Scanner::next` walks the table as far
    as it can, remembering the last accepting state. When it hits `S_DEAD` it
@@ -178,14 +182,3 @@ Run `build/lexer --dump-table` to print the full table.
 ├── README.md
 └── requirements.txt                  # Python packages for the tests
 ```
-
-## Known bugs
-
-- The lexer does not skip `//` comments. A comment scans as two `/` tokens
-  followed by the tokens of the comment text.
-- The lexer prints the lexeme as the value of every token. Keywords,
-  punctuation, matrix and comparison operators, `COMPILER_ERROR` and
-  `COMPILER_EOF` have no value part and should print as `<TYPE,>`.
-- `+=`, `-=`, `*=` and `/=` scan as an arithmetic operator followed by `=`.
-  Each should be a single `OPERATORS_ASSIGNMENT` token.
-- The usage message mentions `-o <out>`, which is not implemented.

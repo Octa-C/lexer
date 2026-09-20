@@ -12,7 +12,7 @@
 static void dumpTable(std::ostream&out){
     out<< "| state |";
     for(int c = 0;c< NUM_CLASSES;c++){
-        out<< " " << c << " |";
+        out<< " " << c << ' ' << CLASS_NAMES[c] << " |";
     }
     out<< "\n|---|";
     for(int c = 0;c< NUM_CLASSES;c++){
@@ -34,31 +34,56 @@ static void dumpTable(std::ostream&out){
 
 
 
-int main(int argc, char** argv) {
-        if (argc >= 2 && std::string(argv[1]) == "--dump-table") {
+static int usage() {
+    std::cerr << "usage: lexer <file.oc> [-o <out>]  |  lexer --dump-table\n";
+    return 2;
+}
 
+int main(int argc, char** argv) {
+    if (argc >= 2 && std::string(argv[1]) == "--dump-table") {
         dumpTable(std::cout);
         return 0;
     }
-    if (argc < 2) {
-        std::cerr << "usage: lexer <file.oc> [-o <out>]  |  lexer --dump-table\n";
-        return 2;
+
+    const char* inPath = nullptr;
+    const char* outPath = nullptr;
+    for (int i = 1; i < argc; i++) {
+        if (std::string(argv[i]) == "-o") {
+            if (i + 1 >= argc || outPath) return usage();
+            outPath = argv[++i];
+        } else if (!inPath) {
+            inPath = argv[i];
+        } else {
+            return usage();
+        }
     }
-        std::ifstream in(argv[1]);
-    if (!in) { std::cerr << "cannot open " << argv[1] << '\n'; return 2; }
+    if (!inPath) return usage();
+
+    std::ifstream in(inPath);
+    if (!in) { std::cerr << "cannot open " << inPath << '\n'; return 2; }
     std::stringstream buf;
     buf << in.rdbuf();
+
+    std::ofstream outFile;
+    if (outPath) {
+        outFile.open(outPath);
+        if (!outFile) { std::cerr << "cannot open " << outPath << '\n'; return 2; }
+    }
+    std::ostream& out = outPath ? static_cast<std::ostream&>(outFile) : std::cout;
 
     Scanner scanner(buf.str());
     for (;;) {
         Token t = scanner.next();
-        std::cout << '<' << tokenTypeName(t.type) << ',';
-        if (hasValuePart(t.type)) std::cout << ' ' << t.value;
-        std::cout << ">\n";
+        out << '<' << tokenTypeName(t.type) << ',';
+        if (hasValuePart(t.type)) out << ' ' << t.value;
+        out << ">\n";
         if (t.type == COMPILER_ERROR)
-            std::cerr << argv[1] << ':' << t.line << ':' << t.column
+            std::cerr << inPath << ':' << t.line << ':' << t.column
                       << ": error: unrecognized lexeme '" << t.value << "'\n";
         if (t.type == COMPILER_EOF) break;
     }
+
+    out.flush();
+    if (!out) { std::cerr << "cannot write " << (outPath ? outPath : "standard output") << '\n'; return 2; }
     return 0;
 }
