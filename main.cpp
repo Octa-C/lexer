@@ -1,15 +1,13 @@
 //main.cpp
 
-
-
 #include <fstream>
 #include <iostream>
 #include <sstream>
 
 
-#include "dfa.hpp"
-#include "scanner.hpp"
-#include "token.hpp"
+#include "include/dfa.hpp"
+#include "include/scanner.hpp"
+#include "include/token.hpp"
 
 static void dumpTable(std::ostream&out){
     out<< "| state |";
