@@ -1,3 +1,4 @@
-build/*.o
-build/lexer
-build/lexer.exe
+build/
+__pycache__/
+.venv/
+.pytest_cache/
